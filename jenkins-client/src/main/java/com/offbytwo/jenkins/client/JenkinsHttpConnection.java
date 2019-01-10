@@ -220,6 +220,8 @@ public interface JenkinsHttpConnection extends Closeable {
      */
     String post_xml(String path, String xml_data, boolean crumbFlag) throws IOException;
 
+    String post_xml_no_api(String path, String xml_data, boolean crumbFlag) throws IOException;
+
     /**
      * Get the Jenkins server version.
      *

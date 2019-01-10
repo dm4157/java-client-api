@@ -282,7 +282,7 @@ public class JenkinsServer implements Closeable {
         try {
             JobWithDetails job = client.get(UrlUtils.toJobBaseUrl(folder, jobName), JobWithDetails.class);
             job.setClient(client);
-
+            job.setFolder(folder);
             return job;
         } catch (HttpResponseException e) {
             LOGGER.debug("getJob(folder={}, jobName={}) status={}", folder, jobName, e.getStatusCode());

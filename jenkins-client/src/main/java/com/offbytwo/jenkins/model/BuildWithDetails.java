@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.offbytwo.jenkins.client.util.EncodingUtils;
+import com.offbytwo.jenkins.client.util.UrlUtils;
 import com.offbytwo.jenkins.helper.BuildConsoleStreamListener;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;

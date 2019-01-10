@@ -380,6 +380,30 @@ public class JenkinsHttpClient implements JenkinsHttpConnection {
         }
     }
 
+    @Override
+    public String post_xml_no_api(String path, String xml_data, boolean crumbFlag) throws IOException {
+        HttpPost request = new HttpPost(UrlUtils.toNoApiUri(uri, context, path));
+        if (crumbFlag == true) {
+            Crumb crumb = getQuietly("/crumbIssuer", Crumb.class);
+            if (crumb != null) {
+                request.addHeader(new BasicHeader(crumb.getCrumbRequestField(), crumb.getCrumb()));
+            }
+        }
+
+        if (xml_data != null) {
+            request.setEntity(new StringEntity(xml_data, ContentType.create("text/xml", "utf-8")));
+        }
+        HttpResponse response = client.execute(request, localContext);
+        jenkinsVersion = ResponseUtils.getJenkinsVersion(response);
+        try {
+            httpResponseValidator.validateResponse(response);
+            return IOUtils.toString(response.getEntity().getContent());
+        } finally {
+            EntityUtils.consume(response.getEntity());
+            releaseConnection(request);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */

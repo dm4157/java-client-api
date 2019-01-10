@@ -210,4 +210,9 @@ public class Build extends BaseModel {
         result = prime * result + ((url == null) ? 0 : url.hashCode());
         return result;
     }
+
+    public void promotionBuild(String name) throws IOException {
+        String path = url + "/promotion/forcePromotion?name=" + name;
+        client.post(path);
+    }
 }

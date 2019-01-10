@@ -37,7 +37,7 @@ public final class UrlUtils {
     public static String toBaseUrl(final FolderJob folder) {
         return folder == null ? "/" : folder.getUrl();
     }
-    
+
     
     
     /**
@@ -59,7 +59,7 @@ public final class UrlUtils {
         }
         return sb.toString();
     }
-    
+
     
     /**
      * Helper to create the base url for a view, with or without a given folder

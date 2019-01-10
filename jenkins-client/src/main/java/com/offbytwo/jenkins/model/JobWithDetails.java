@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.offbytwo.jenkins.client.util.UrlUtils;
+import lombok.Data;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 
@@ -59,6 +61,8 @@ public class JobWithDetails extends Job {
     private List<Job> downstreamProjects;
 
     private List<Job> upstreamProjects;
+
+    private FolderJob folder;
     
     public String getDescription() {
         return description;
@@ -120,10 +124,8 @@ public class JobWithDetails extends Job {
      *      Issue</a>
      */
     public List<Build> getAllBuilds() throws IOException {
-        String path = "/";
-
         try {
-            List<Build> builds = client.get(path + "job/" + EncodingUtils.encode(this.getName())
+            List<Build> builds = client.get(UrlUtils.toJobBaseUrl(folder, this.getName())
                     + "?tree=allBuilds[number[*],url[*],queueId[*]]", AllBuilds.class).getAllBuilds();
 
             if (builds == null) {
@@ -205,6 +207,22 @@ public class JobWithDetails extends Job {
         return ret;
     }
 
+    public List<Action> actions() throws IOException {
+        String path = this.getUrl() + "/promotion";
+        return client.get(path, PromotedAction.class).getProcesses();
+    }
+
+    public ActionWithDetails actionDetails(String name) throws IOException {
+        return client.get(makePromotionUrl(name), ActionWithDetails.class);
+    }
+//
+//    public String getPromotionXml(String name) throws IOException {
+//        return client.get(makePromotionUrl(name) + "/config.xml");
+//    }
+//
+    private String makePromotionUrl(String name) {
+        return UrlUtils.toJobBaseUrl(folder, this.getName()) + "/promotion/process/" + EncodingUtils.encode(name);
+    }
     /**
      * @return the first build which has been executed or
      *         {@link Build#BUILD_HAS_NEVER_RUN} if the build has never been
@@ -551,6 +569,7 @@ public class JobWithDetails extends Job {
         result = prime * result + nextBuildNumber;
         result = prime * result + ((queueItem == null) ? 0 : queueItem.hashCode());
         result = prime * result + ((upstreamProjects == null) ? 0 : upstreamProjects.hashCode());
+        result = prime * result + ((folder == null) ? 0 : folder.hashCode());
         return result;
     }
 
@@ -637,9 +656,18 @@ public class JobWithDetails extends Job {
         if (upstreamProjects == null) {
             if (other.upstreamProjects != null)
                 return false;
-        } else if (!upstreamProjects.equals(other.upstreamProjects))
+        } else if (!upstreamProjects.equals(other.upstreamProjects)) {
             return false;
+        } else if (folder == null) {
+            if (other.folder != null)
+                return false;
+        } else if (!folder.equals(other.folder)) {
+            return false;
+        }
         return true;
     }
 
+    public void setFolder(FolderJob folder) {
+        this.folder = folder;
+    }
 }
